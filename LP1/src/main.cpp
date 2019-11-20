@@ -1,6 +1,7 @@
 //Bibliotecas padrão
 
 #include <iostream>
+#include <istream>
 #include <string>
 #include <vector>
 #include <cstdlib>
@@ -16,14 +17,17 @@
 
 using namespace std;
 
-//
+//Funções para manipular os objetos Concessionaria
 
-void criarConcessionaria();
-Concessionaria *escolherConcessionaria();
-Concessionaria *encontrarConcessionaria(string cnpj, bool imprimir);
+void criarConcessionaria(); //Cria uma concessionaria com todos os seus atributos
+void listarConcessionarias(); //Lista todas as concessionarias existentes, e caso nao haja nenhuma, ele irá informar
+Concessionaria *escolherConcessionaria(); //Função para escolher uma concessionaria e fazer alterações em seus atributos, como os veículos
+Concessionaria *encontrarConcessionaria(string cnpj, bool imprimir); //Função para encontrar uma concessionaria ja existente
 
-vector<Concessionaria *> concessionarias;
-Concessionaria *concessionariaSelecionada = NULL;
+vector<Concessionaria *> concessionarias; //Vetor de concessionarias
+Concessionaria *concessionariaSelecionada = NULL; //Objeto concessionaria utilizado no menu de interação com usuário
+
+//-------------------------------------------------------------------------------------------------
 
 int main()
 {
@@ -33,8 +37,10 @@ int main()
 
   system("clear");
 
+  //Laço para manter o usuário no menu
   while (!sair)
   {
+    //Condicional para menu de todas as concessionarias
     if (concessionariaSelecionada == NULL)
     {
       selecaoMenuPrincipal = menuPrincipal();
@@ -47,10 +53,14 @@ int main()
       case 2:
         criarConcessionaria();
         break;
+      case 3:
+        listarConcessionarias();
+        break;
       default:
         return 0;
       }
     }
+    //condicional para menu de uma concessionaria especifica
     else
     {
       selecaoMenuConcessionaria = menuDaConcessionaria();
@@ -69,6 +79,9 @@ int main()
       case 4:
         concessionariaSelecionada->listarCarros90();
         break;
+      case 5:
+        concessionariaSelecionada->pesquisaChassi();
+        break;
       default:
         concessionariaSelecionada = NULL;
         break;
@@ -83,11 +96,15 @@ int main()
 
 void criarConcessionaria()
 {
+  //Propriedades que serão passadas para o novo objeto
   string nome, cnpj, tipo_propriedade, nome_propriedade;
-  int escolha;
+  int escolha = 0;
 
   cout << endl
        << "=== CADASTRO DE CONCESSIONÁRIA ===" << endl;
+
+  cout << "Nome: ";
+  cin >> nome;
 
   cout << "CNPJ: ";
   cin >> cnpj;
@@ -98,8 +115,7 @@ void criarConcessionaria()
   }
   else
   {
-    cout << "Nome: ";
-    cin >> nome;
+    cin.clear();
 
     cout << "Tipo de propriedade: "
          << endl
@@ -121,7 +137,7 @@ void criarConcessionaria()
     {
       tipo_propriedade = "Pessoa Jurídica: ";
 
-      cout << "Informe o número da Pessoa Jurídica";
+      cout << "Informe o número da Pessoa Jurídica: ";
       cin >> nome_propriedade;
     }
     else 
@@ -129,13 +145,51 @@ void criarConcessionaria()
       cout << "Valor informado inválido!";
     }
 
-
+    //Adicionando o novo objetvo no vetor de concessionarias
     concessionarias.push_back(new Concessionaria(nome, cnpj, tipo_propriedade, nome_propriedade));
 
     cout << endl
          << "Concessionária cadastrada com sucesso!" << endl;
   }
 }
+
+//-------------------------------------------------------------------------------------------------
+
+void listarConcessionarias()
+{
+  cout << endl
+        << "=== LISTAR CONCESSIONÁRIAS ===" << endl;
+
+  if (concessionarias.size() == 0)
+  {
+    cout << endl << "Nenhuma concessionária cadastrada."
+         << endl;
+    return;
+  }
+
+  for (unsigned int i = 0; i < concessionarias.size(); i++)
+  {
+
+    cout << endl << "######################################################" << endl << endl;
+
+    Concessionaria *concessionaria = concessionarias[i];
+
+    //Informações básicas da concessionaria
+    cout << "Nome: " << concessionaria->getNome() << endl
+          << "Proprietário do tipo " << concessionaria->getTipo_propriedade()
+          << concessionaria->getNome_propriedade() << endl;
+
+    //Informações dos veículos da concessionaria
+    concessionaria->listarEstoque();
+
+    //Informação do valor total dos veículos da concessionaria
+    cout << endl << "Valor total dos veículos: R$" << concessionaria->valorTotal() << endl;
+  } 
+
+  cout << endl << "######################################################" << endl << endl;
+}
+
+//-------------------------------------------------------------------------------------------------
 
 Concessionaria *escolherConcessionaria()
 {
@@ -144,6 +198,7 @@ Concessionaria *escolherConcessionaria()
   cout << endl
        << "=== ESCOLHER CONCESSIONÁRIA ===" << endl;
 
+  //listagem de todas as concessionarias criadas
   for (unsigned int i = 0; i < concessionarias.size(); i++)
   {
     cout << i + 1 << " - " << concessionarias[i]->getNome() << endl;
@@ -166,6 +221,7 @@ Concessionaria *escolherConcessionaria()
     return NULL;
   }
 
+  //Selecionando a concessionaria escolhida de acordo com o valor passado pelo usuario
   if (selecao < 0 || selecao > concessionarias.size())
   {
     return escolherConcessionaria();
@@ -174,14 +230,18 @@ Concessionaria *escolherConcessionaria()
   return concessionarias[selecao - 1];
 }
 
+//-------------------------------------------------------------------------------------------------
+
 Concessionaria *encontrarConcessionaria(string cnpj, bool imprimir)
 {
   for (unsigned int i = 0; i < concessionarias.size(); i++)
   {
     Concessionaria *concessionaria = concessionarias[i];
 
+    //Comparando as concessionarias pelo CNPJ cadastrado
     if (concessionaria->getCnpj() == cnpj)
     {
+      //Utilizando uma sobrecarga de operador para imprimir o objeto concessionaria
       if (imprimir)
       {
         cout << concessionaria;

@@ -4,10 +4,13 @@
  * Constructors and Destructors
  */
 
+//Construtor Padrão
 Concessionaria::Concessionaria() {}
 
+//Destrutor Padrão
 Concessionaria::~Concessionaria() {}
 
+//Construtor com parâmetro, utilizando as propriedades da concessionaria
 Concessionaria::Concessionaria(string nome, string cnpj, string tipo_propriedade, string nome_propriedade)
 {
   setNome(nome);
@@ -89,6 +92,10 @@ void Concessionaria::listarEstoque()
        << "=== LISTAR VEÍCULOS NO ESTOQUE === " << endl
        << endl;
 
+  /**
+   * As impressões estão sendo feitas utilizando a sobrecarga do operador "<<", criado na classe Veículo
+   */
+
   for (unsigned int i = 0; i < estoque_automovel.size(); i++)
   {
     cout << *estoque_automovel[i];
@@ -104,17 +111,20 @@ void Concessionaria::listarEstoque()
     cout << *estoque_caminhao[i];
   }
 
+  //Em caso de não haver nenhum veículo cadastrado ainda
   if (estoque_automovel.size() == 0 && estoque_caminhao.size() == 0 && estoque_moto.size() == 0)
   {
-    cout << "Nenhum automóvel em estoque." << endl;
+    cout << "Nenhum veículo em estoque." << endl;
   }
 }
 
 void Concessionaria::adicionarVeiculoAoEstoque()
 {
 
-  int entrada_tipo, entrada;
+  //variáveis auxiliares
+  int entrada_tipo = 0, entrada = 0;
 
+  //Propriedades do veículos
   string marca, chassi, motor, modelo, carga;
   float preco;
   int dia, mes, ano;
@@ -122,6 +132,7 @@ void Concessionaria::adicionarVeiculoAoEstoque()
   cout << endl
        << "=== CADASTRO DE VEÍCULO ===" << endl;
 
+  //Tipos de veículos disponíveis para cadastro
   cout << endl
        << "Selecione o tipo de veículo:"
        << endl 
@@ -134,15 +145,17 @@ void Concessionaria::adicionarVeiculoAoEstoque()
        << "Informe um numero: ";
   cin >> entrada_tipo;
 
+  //Checkagem para conferir se o valor informado é valido
   if (entrada_tipo != 1 && entrada_tipo != 2 && entrada_tipo != 3)
   {
     cout << "Valor inserido invalido!!!";
     return;
   }
 
-  cout << "Chassi: ";
+  cout << "Chassi (Apenas números): ";
   cin >> chassi;
 
+  //Checando se o número do chassi cadastrado ja é existente
   if (encontrarVeiculoNoEstoque(chassi, false) != NULL)
   {
     cout << endl
@@ -175,7 +188,7 @@ void Concessionaria::adicionarVeiculoAoEstoque()
          << endl
          << "[2] Elétrico"
          << endl
-         << "Informe um valor: ";
+         << "Informe um numero: ";
     cin >> entrada;
 
     if (entrada == 1)
@@ -192,6 +205,7 @@ void Concessionaria::adicionarVeiculoAoEstoque()
       return;
     }
 
+    //adicionando o veículo cadastrado ao vetor do seu tipo específico
     estoque_automovel.push_back(new Automovel(marca, chassi, preco, dia, mes, ano, motor));
   }
   else if (entrada_tipo == 2)
@@ -202,7 +216,7 @@ void Concessionaria::adicionarVeiculoAoEstoque()
          << endl
          << "[2] Esportivo"
          << endl
-         << "Informe um valor: ";
+         << "Informe um numero: ";
     cin >> entrada;
 
     if (entrada == 1)
@@ -219,6 +233,7 @@ void Concessionaria::adicionarVeiculoAoEstoque()
       return;
     }
 
+    //adicionando o veículo cadastrado ao vetor do seu tipo específico
     estoque_moto.push_back(new Moto(marca, chassi, preco, dia, mes, ano, modelo));
   }
   else if (entrada_tipo == 3)
@@ -229,7 +244,7 @@ void Concessionaria::adicionarVeiculoAoEstoque()
          << endl
          << "[2] Perigosa"
          << endl
-         << "Informe um valor: ";
+         << "Informe um numero: ";
     cin >> entrada;
 
     if (entrada == 1)
@@ -246,6 +261,7 @@ void Concessionaria::adicionarVeiculoAoEstoque()
       return;
     }
 
+    //adicionando o veículo cadastrado ao vetor do seu tipo específico
     estoque_caminhao.push_back(new Caminhao(marca, chassi, preco, dia, mes, ano, carga));
   }
 
@@ -260,6 +276,7 @@ void Concessionaria::aumentarValorDoEstoque()
   cout << endl
        << "=== AUMENTAR VALOR DO ESTOQUE ===" << endl;
 
+  //Valor da porcentagem a ser aplicada em todos os Preços dos veículos
   cout << "Porcentagem de aumento (Apenas numeros entre 0 e 100): " << endl;
   cin >> porcentagem;
 
@@ -318,8 +335,10 @@ void Concessionaria::listarCarros90()
     int mes_fab = automovel->getMesDataDeFabricacao();
     int ano_fab = automovel->getAnoDataDeFabricacao();
 
+    //Utiliza a função calculaData para transformar o dia, mes e ano em um único valor inteiro, facilitando a subtração entre os valores
     int resultado = calculaData(dia_data_atual, mes_data_atual, ano_data_atual) - calculaData(dia_fab, mes_fab, ano_fab);
 
+    //Impressão do veículo utilizando a sobrecarga de operador da class Veículo
     if (resultado <= 90)
     {
       cout << *estoque_automovel[i];
@@ -369,7 +388,14 @@ Veiculo *Concessionaria::encontrarVeiculoNoEstoque(string chassi, bool imprimir)
     {
       if (imprimir)
       {
-        cout << automovel;
+        cout << "=== IMPRIMIR VEÍCULO ===" << endl
+        << "Automovel" << endl
+        << "Marca: \t" << automovel->getMarca() << endl
+        << "Preço: \t\tR$ " << automovel->getPreco() << endl
+        << "Chassi: \t" << automovel->getChassi() << endl
+        << "Fabricação: \t" << automovel->getDiaDataDeFabricacao() << "/" << automovel->getMesDataDeFabricacao() << "/" << automovel->getAnoDataDeFabricacao() << endl
+        << "Tipo de motor: \t" << automovel->getMotor() << endl
+        << endl;
       }
 
       return automovel;
@@ -384,7 +410,14 @@ Veiculo *Concessionaria::encontrarVeiculoNoEstoque(string chassi, bool imprimir)
     {
       if (imprimir)
       {
-        cout << moto;
+        cout << "=== IMPRIMIR VEÍCULO ===" << endl
+        << "Moto" << endl
+        << "Marca: \t" << moto->getMarca() << endl
+        << "Preço: \t\tR$ " << moto->getPreco() << endl
+        << "Chassi: \t" << moto->getChassi() << endl
+        << "Fabricação: \t" << moto->getDiaDataDeFabricacao() << "/" << moto->getMesDataDeFabricacao() << "/" << moto->getAnoDataDeFabricacao() << endl
+        << "Tipo de modelo: \t" << moto->getModelo() << endl
+        << endl;
       }
 
       return moto;
@@ -399,7 +432,14 @@ Veiculo *Concessionaria::encontrarVeiculoNoEstoque(string chassi, bool imprimir)
     {
       if (imprimir)
       {
-        cout << caminhao;
+        cout << "=== IMPRIMIR VEÍCULO ===" << endl
+        << "Caminhão" << endl
+        << "Marca: \t" << caminhao->getMarca() << endl
+        << "Preço: \t\tR$ " << caminhao->getPreco() << endl
+        << "Chassi: \t" << caminhao->getChassi() << endl
+        << "Fabricação: \t" << caminhao->getDiaDataDeFabricacao() << "/" << caminhao->getMesDataDeFabricacao() << "/" << caminhao->getAnoDataDeFabricacao() << endl
+        << "Tipo de carga: \t" << caminhao->getCarga() << endl
+        << endl;
       }
 
       return caminhao;
@@ -422,4 +462,39 @@ int Concessionaria::calculaData(int day, int month, int year)
     year--, month += 12;
 
   return 365 * year + year / 4 - year / 100 + year / 400 + (153 * month - 457) / 5 + day - 306;
+}
+
+void Concessionaria::pesquisaChassi()
+{
+  string _chassi;
+
+  cout << endl
+       << "=== PESQUISAR VEÍCULOS POR CHASSI ===" << endl;
+
+  cout << "Informe o número de chassi a ser pesquisado (Apenas números): ";
+  cin >> _chassi;
+
+  encontrarVeiculoNoEstoque(_chassi, true);
+}
+
+int Concessionaria::valorTotal()
+{
+  int total = 0;
+  
+  for (unsigned int i = 0; i < estoque_automovel.size(); i++)
+  {
+    total += estoque_automovel[i]->getPreco();
+  }
+
+  for (unsigned int i = 0; i < estoque_moto.size(); i++)
+  {
+    total += estoque_moto[i]->getPreco();
+  }
+
+  for (unsigned int i = 0; i < estoque_caminhao.size(); i++)
+  {
+    total += estoque_caminhao[i]->getPreco();
+  }
+
+  return total;
 }
